@@ -1,0 +1,30 @@
+gmmkctl
+Cross platform utility to control the features of the GMMK keyboard.
+
+Compiling (tested with libusb 1.0):
+make
+
+USAGE: gmmkctl [command [<args ...>] ...]
+
+Run with no command will indicate the number of devices which it found which it
+can control.  Currently it will try to control the first 8 keyboards it finds.
+
+Commands:
+devmask <mask> - Set the mask of detected devices which should be controlled by
+    the following commands.  By default, all are selected.
+mode <num> - Set the mode.  17 is the mode for freely programming the keys, and
+    the highest meaningful value.
+brightness <num> - Set the brightness.  0 - 4 are meaningful.
+delay <num> - Set the delay between animation frames.  Very large values seem to
+    be meaningful.  0 - 255
+left - Set animation to proceed towards the left.
+right - Set animation to proceed towards the right.
+colorful - Turn on "colorful" mode.
+single - Turn on single color (not colorful) mode.
+color <r> <g> <b> - Set color for single color mode. 0 - 255
+keys - Read in human readable numbers from standard input and set key colors.
+    Values may be separated by any whitespace.  Seems to work by feeding in a
+    file from standard input or with a here word/document.
+    first value - Offset key to start programming colors.
+    second value - Number of values to follow.
+    N additional triplets - R, G and B values for each key color.  0 - 255

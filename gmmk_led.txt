@@ -15,8 +15,8 @@
 
     11 - set key colors
         1 byte - count
-        1 byte - start
-        2 bytes - always 00 00?
+        2 byte - start
+        1 byte - always 00?
         count bytes - color values
 
 0040   04 08 00 06 01 00 00 00 01 00 00 00 00 00 00 00

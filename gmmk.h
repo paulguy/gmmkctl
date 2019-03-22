@@ -5,6 +5,7 @@
 
 #define GMMK_MAX_DEVS (8)
 #define GMMK_PACKET_SIZE (64)
+#define GMMK_MAX_KEY (126) /* highest key value addressed by Windows utility */
 
 typedef struct {
     libusb_context *usb;
@@ -30,7 +31,7 @@ int gmmk_unsetColorful(GMMKState *s, int devNum);
 int gmmk_setAnimationColor(GMMKState *s, int devNum,
                            unsigned char r, unsigned char g, unsigned char b);
 int gmmk_setRate(GMMKState *s, int devNum, unsigned char rate);
-int gmmk_setKeys(GMMKState *s, int devNum, unsigned char start,
-                 unsigned char count, const GMMKColor *c);
+int gmmk_setKeys(GMMKState *s, int devNum, unsigned int start,
+                 unsigned int count, const GMMKColor *c);
 
 #endif

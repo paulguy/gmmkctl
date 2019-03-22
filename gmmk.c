@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 
 #include "gmmk.h"
 
@@ -29,8 +28,6 @@
 #define GMMK_SUBCMD_CMD_OFFSET (4)
 #define GMMK_SUBCMD_ARG_OFFSET (8)
 
-#define GMMK_KEYBOARD_KEYS (104)
-
 const char GMMK_SUBCMD_MODE[] = {0x01, 0x00, 0x00, 0x00};
 const char GMMK_SUBCMD_BRIGHTNESS[] = {0x01, 0x01, 0x00, 0x00};
 const char GMMK_SUBCMD_DELAY[] = {0x01, 0x02, 0x00, 0x00};
@@ -43,7 +40,6 @@ const char GMMK_SUBCMD_RATE[] = {0x01, 0x0f, 0x00, 0x00};
 GMMKState *gmmk_open() {
     GMMKState *s;
     enum libusb_error e;
-    int count, i;
 
     s = malloc(sizeof(GMMKState));
     if(s == NULL) {
@@ -55,10 +51,10 @@ GMMKState *gmmk_open() {
         goto error1;
     }
 
-    count = open_libusb_devices(s->usb, s->usbDevs, GMMK_MAX_DEVS, GMMK_VENDOR_ID,
+    s->devices = open_libusb_devices(s->usb, s->usbDevs, GMMK_MAX_DEVS, GMMK_VENDOR_ID,
         GMMK_PRODUCT_ID, GMMK_LED_INTERFACE);
 
-    if(count == 0) {
+    if(s->devices == 0) {
         goto error2;
     }
 
@@ -98,6 +94,7 @@ void sum(unsigned short int *sum, unsigned char *mem, int size) {
 }
 
 #define TRANSFER_OR_FAIL(BUFFER, USBDEV) \
+    BUFFER[0] = 4; \
     sum((unsigned short int *)&(BUFFER[GMMK_SUM_OFFSET]), \
         &(BUFFER[GMMK_COMMAND_OFFSET]), \
         GMMK_PACKET_SIZE - GMMK_COMMAND_OFFSET); \
@@ -126,18 +123,18 @@ void sum(unsigned short int *sum, unsigned char *mem, int size) {
         fprintf(stderr, "WARNING: Short packet read.\n"); \
     }
 
-#define CLEAR_BUFFER(BUFFER) \
-    bzero(&(BUFFER[GMMK_COMMAND_OFFSET]), \
-          GMMK_PACKET_SIZE - GMMK_COMMAND_OFFSET);
+#define CLEAR_BUFF(BUFFER) \
+    memset(&(BUFFER[GMMK_COMMAND_OFFSET]), 0,\
+           GMMK_PACKET_SIZE - GMMK_COMMAND_OFFSET);
 
 #define DO_START(BUFFER, USBDEV) \
-    CLEAR_BUFFER(BUFFER) \
-    gd->buffer[GMMK_COMMAND_OFFSET] = GMMK_CMD_START; \
+    CLEAR_BUFF(BUFFER) \
+    BUFFER[GMMK_COMMAND_OFFSET] = GMMK_CMD_START; \
     TRANSFER_OR_FAIL(BUFFER, USBDEV)
 
-#define DO_START(BUFFER, USBDEV) \
-    CLEAR_BUFFER(BUFFER) \
-    gd->buffer[GMMK_COMMAND_OFFSET] = GMMK_CMD_END; \
+#define DO_END(BUFFER, USBDEV) \
+    CLEAR_BUFF(BUFFER) \
+    BUFFER[GMMK_COMMAND_OFFSET] = GMMK_CMD_END; \
     TRANSFER_OR_FAIL(BUFFER, USBDEV)
 
 #define APPLY_SUBCOMMAND(BUFFER, SCMD, SCARG) \
@@ -148,7 +145,7 @@ void sum(unsigned short int *sum, unsigned char *mem, int size) {
     BUFFER[GMMK_SUBCMD_ARG_OFFSET] = SCARG;
 
 #define DO_SUBCOMMAND(BUFFER, USBDEV, SCMD, SCARG) \
-    CLEAR_BUFFER(BUFFER) \
+    CLEAR_BUFF(BUFFER) \
     APPLY_SUBCOMMAND(BUFFER, SCMD, SCARG) \
     TRANSFER_OR_FAIL(BUFFER, USBDEV)
 
@@ -162,8 +159,8 @@ void sum(unsigned short int *sum, unsigned char *mem, int size) {
     BUFFER[GMMK_SUBCMD_ARG_OFFSET+2] = SCB;
 
 #define DO_SUBCOMMAND_RGB(BUFFER, USBDEV, SCMD, SCR, SCG, SCB) \
-    CLEAR_BUFFER(BUFFER) \
-    APPLY_SUBCOMMAND(BUFFER, SCMD, SCR, SCG, SCB) \
+    CLEAR_BUFF(BUFFER) \
+    APPLY_SUBCOMMAND_RGB(BUFFER, SCMD, SCR, SCG, SCB) \
     TRANSFER_OR_FAIL(BUFFER, USBDEV)
 
 int gmmk_setMode(GMMKState *s, int devNum, unsigned char mode) {
@@ -193,7 +190,7 @@ int gmmk_setDelay(GMMKState *s, int devNum, unsigned char delay) {
     int transferred;
 
     DO_START(s->buffer, s->usbDevs[devNum])
-    DO_SUBCOMMAND(s->buffer, s->usbDevs[devNum], GMMK_SUBCMD_DELAY, brightness)
+    DO_SUBCOMMAND(s->buffer, s->usbDevs[devNum], GMMK_SUBCMD_DELAY, delay)
     DO_END(s->buffer, s->usbDevs[devNum])
 
     return(0);
@@ -204,7 +201,7 @@ int gmmk_setDirLeft(GMMKState *s, int devNum) {
     int transferred;
 
     DO_START(s->buffer, s->usbDevs[devNum])
-    DO_SUBCOMMAND(s->buffer, s->usbDevs[devNum], GMMK_SUBCMD_DIRECTION, 0)
+    DO_SUBCOMMAND(s->buffer, s->usbDevs[devNum], GMMK_SUBCMD_DIRECTION, 0xFF)
     DO_END(s->buffer, s->usbDevs[devNum])
 
     return(0);
@@ -215,7 +212,7 @@ int gmmk_setDirRight(GMMKState *s, int devNum) {
     int transferred;
 
     DO_START(s->buffer, s->usbDevs[devNum])
-    DO_SUBCOMMAND(s->buffer, s->usbDevs[devNum], GMMK_SUBCMD_DIRECTION, 0xFF)
+    DO_SUBCOMMAND(s->buffer, s->usbDevs[devNum], GMMK_SUBCMD_DIRECTION, 0)
     DO_END(s->buffer, s->usbDevs[devNum])
 
     return(0);
@@ -255,7 +252,6 @@ int gmmk_setAnimationColor(GMMKState *s, int devNum,
     return(0);
 }
 
-
 int gmmk_setRate(GMMKState *s, int devNum, unsigned char rate) {
     enum libusb_error e;
     int transferred;
@@ -267,23 +263,40 @@ int gmmk_setRate(GMMKState *s, int devNum, unsigned char rate) {
     return(0);
 }
 
-int gmmk_setKeys(GMMKState *s, int devNum, unsigned char start,
-                 unsigned char count, const GMMKColor *c) {
-    int i, j;
+int gmmk_setKeys(GMMKState *s, int devNum, unsigned int start,
+                 unsigned int count, const GMMKColor *c) {
+    enum libusb_error e;
+    int transferred;
+    unsigned int i, j;
+
+    fprintf(stderr, "%u %u\n", start, count);
+
+    if(start > GMMK_MAX_KEY) {
+        return(0);
+    }
+
+    if(start + count > GMMK_MAX_KEY) {
+        count = GMMK_MAX_KEY - start;
+    }
 
     DO_START(s->buffer, s->usbDevs[devNum])
 
-    for(i = 0; i < count; i += GMMK_KEYCOLORS_DATA_SIZE / 3);
-        CLEAR_BUFFER(s->buffer)
+    for(i = 0; i < count; i += GMMK_KEYCOLORS_DATA_SIZE / 3) {
+        CLEAR_BUFF(s->buffer)
         s->buffer[GMMK_COMMAND_OFFSET] = GMMK_CMD_KEYCOLORS;
-        s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET] = i * 3 > GMMK_KEYCOLORS_DATA_SIZE ?
+        s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET] = (count - i) * 3 > GMMK_KEYCOLORS_DATA_SIZE ?
                                                  GMMK_KEYCOLORS_DATA_SIZE :
-                                                 i * 3;
-        s->buffer[GMMK_KEYCOLORS_START_OFFSET] = i * 3;
-        for(j = 0; j < GMMK_KEYCOLORS_DATA_SIZE; j+=3) {
-            s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+0] = c[i+(j/3)]->r;
-            s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+1] = c[i+(j/3)]->g;
-            s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+2] = c[i+(j/3)]->b;
+                                                 (count - i) * 3;
+        *(unsigned short int *)(&(s->buffer[GMMK_KEYCOLORS_START_OFFSET])) =
+            (start * 3) + (i * 3);
+        fprintf(stderr, "%u %u\n", s->buffer[GMMK_KEYCOLORS_START_OFFSET],
+                                   s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET]);
+
+        for(j = 0; j < s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET]; j+=3) {
+            fprintf(stderr, "%u %u %u\n", c[i+(j/3)].r, c[i+(j/3)].g, c[i+(j/3)].b);
+            s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+0] = c[i+(j/3)].r;
+            s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+1] = c[i+(j/3)].g;
+            s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+2] = c[i+(j/3)].b;
         }
         TRANSFER_OR_FAIL(s->buffer, s->usbDevs[devNum])
     }
