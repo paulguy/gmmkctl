@@ -12,7 +12,7 @@ can control.  Currently it will try to control the first 8 keyboards it finds.
 Commands:
 devmask <mask> - Set the mask of detected devices which should be controlled by
     the following commands.  By default, all are selected.
-mode <num> - Set the mode.  17 is the mode for freely programming the keys, and
+mode <num> - Set the mode.  20 is the mode for freely programming the keys, and
     the highest meaningful value.
 brightness <num> - Set the brightness.  0 - 4 are meaningful.
 delay <num> - Set the delay between animation frames.  Very large values seem to
