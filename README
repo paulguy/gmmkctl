@@ -21,6 +21,7 @@ left - Set animation to proceed towards the left.
 right - Set animation to proceed towards the right.
 colorful - Turn on "colorful" mode.
 single - Turn on single color (not colorful) mode.
+rate - Adjust polling rate.  Not really tested. 0:125, 1:250, 2:500, 3:1000, 4+:???
 color <r> <g> <b> - Set color for single color mode. 0 - 255
 keys - Read in human readable numbers from standard input and set key colors.
     Values may be separated by any whitespace.  Seems to work by feeding in a
