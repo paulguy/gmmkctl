@@ -12,7 +12,6 @@ int main(int argc, char **argv) {
     unsigned int j;
     GMMKState *s;
     unsigned int argInt1, argInt2, argInt3;
-    unsigned int num;
     GMMKColor c[GMMK_MAX_KEY];
 
     unsigned int activeDevs;
@@ -116,19 +115,19 @@ int main(int argc, char **argv) {
             }
         } else if(strcmp(argv[i], "keys") == 0) {
             argInt1 = readNumber();
-            num = readNumber();
-            if(num > GMMK_MAX_KEY) {
+            argInt2 = readNumber();
+            if(argInt1 + argInt2 > GMMK_MAX_KEY) {
                 fprintf(stderr, "Count too high.\n");
                 break;
             }
-            for(j = 0; j < num; j++) {
+            for(j = 0; j < argInt2; j++) {
                 c[j].r = readNumber();
                 c[j].g = readNumber();
                 c[j].b = readNumber();
             }
             for(j = 0; j < GMMK_MAX_DEVS; j++) {
                 if(devMask & (1 << j)) {
-                    gmmk_setKeys(s, j, argInt1, num, c);
+                    gmmk_setKeys(s, j, argInt1, argInt2, c);
                 }
             }
         }
@@ -186,5 +185,6 @@ int readNumber() {
         return(0);
     }
     buffer[i] = '\0';
+
     return(atoi(buffer));
 }

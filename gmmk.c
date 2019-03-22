@@ -289,8 +289,9 @@ int gmmk_setKeys(GMMKState *s, int devNum, unsigned int start,
                                                  (count - i) * 3;
         *(unsigned short int *)(&(s->buffer[GMMK_KEYCOLORS_START_OFFSET])) =
             (start * 3) + (i * 3);
-        fprintf(stderr, "%u %u\n", s->buffer[GMMK_KEYCOLORS_START_OFFSET],
-                                   s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET]);
+        fprintf(stderr, "%u %u\n",
+            *(unsigned short int *)(&(s->buffer[GMMK_KEYCOLORS_START_OFFSET])),
+            s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET]);
 
         for(j = 0; j < s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET]; j+=3) {
             fprintf(stderr, "%u %u %u\n", c[i+(j/3)].r, c[i+(j/3)].g, c[i+(j/3)].b);
