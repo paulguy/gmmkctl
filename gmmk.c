@@ -269,8 +269,8 @@ int gmmk_setKeys(GMMKState *s, int devNum, unsigned int start,
     int transferred;
     unsigned int i, j;
 
-    fprintf(stderr, "%u %u\n", start, count);
-
+/*    fprintf(stderr, "%u %u\n", start, count);
+*/
     if(start > GMMK_MAX_KEY) {
         return(0);
     }
@@ -289,13 +289,13 @@ int gmmk_setKeys(GMMKState *s, int devNum, unsigned int start,
                                                  (count - i) * 3;
         *(unsigned short int *)(&(s->buffer[GMMK_KEYCOLORS_START_OFFSET])) =
             (start * 3) + (i * 3);
-        fprintf(stderr, "%u %u\n",
+/*        fprintf(stderr, "%u %u\n",
             *(unsigned short int *)(&(s->buffer[GMMK_KEYCOLORS_START_OFFSET])),
             s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET]);
-
+*/
         for(j = 0; j < s->buffer[GMMK_KEYCOLORS_COUNT_OFFSET]; j+=3) {
-            fprintf(stderr, "%u %u %u\n", c[i+(j/3)].r, c[i+(j/3)].g, c[i+(j/3)].b);
-            s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+0] = c[i+(j/3)].r;
+/*            fprintf(stderr, "%u %u %u\n", c[i+(j/3)].r, c[i+(j/3)].g, c[i+(j/3)].b);
+*/            s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+0] = c[i+(j/3)].r;
             s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+1] = c[i+(j/3)].g;
             s->buffer[GMMK_KEYCOLORS_DATA_OFFSET+j+2] = c[i+(j/3)].b;
         }
