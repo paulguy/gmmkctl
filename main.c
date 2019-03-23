@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
             if(i < argc - 1) {
                 i++;
                 devMask = atoi(argv[i]);
-                if((devMask & activeDevs) == 0) {
+                if((activeDevs & devMask & activeDevs) == 0) {
                     fprintf(stderr, "WARNING: No devices selected!\n");
                 }
             }
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
                 i++;
                 argInt1 = atoi(argv[i]);
                 for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                    if(devMask & (1 << j)) {
+                    if(activeDevs & devMask & (1 << j)) {
                         gmmk_setMode(s, j, argInt1);
                     }
                 }
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
                 i++;
                 argInt1 = atoi(argv[i]);
                 for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                    if(devMask & (1 << j)) {
+                    if(activeDevs & devMask & (1 << j)) {
                         gmmk_setBrightness(s, j, argInt1);
                     }
                 }
@@ -60,32 +60,32 @@ int main(int argc, char **argv) {
                 i++;
                 argInt1 = atoi(argv[i]);
                 for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                    if(devMask & (1 << j)) {
+                    if(activeDevs & devMask & (1 << j)) {
                         gmmk_setDelay(s, j, argInt1);
                     }
                 }
             }
         } else if(strcmp(argv[i], "left") == 0) {
             for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                if(devMask & (1 << j)) {
+                if(activeDevs & devMask & (1 << j)) {
                     gmmk_setDirLeft(s, j);
                 }
             }
         } else if(strcmp(argv[i], "right") == 0) {
             for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                if(devMask & (1 << j)) {
+                if(activeDevs & devMask & (1 << j)) {
                     gmmk_setDirRight(s, j);
                 }
             }
         } else if(strcmp(argv[i], "colorful") == 0) {
             for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                if(devMask & (1 << j)) {
+                if(activeDevs & devMask & (1 << j)) {
                     gmmk_setColorful(s, j);
                 }
             }
         } else if(strcmp(argv[i], "single") == 0) {
             for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                if(devMask & (1 << j)) {
+                if(activeDevs & devMask & (1 << j)) {
                     gmmk_unsetColorful(s, j);
                 }
             }
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
                 i++;
                 argInt1 = atoi(argv[i]);
                 for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                    if(devMask & (1 << j)) {
+                    if(activeDevs & devMask & (1 << j)) {
                         gmmk_setRate(s, j, argInt1);
                     }
                 }
@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
                 i++;
                 argInt3 = atoi(argv[i]);
                 for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                    if(devMask & (1 << j)) {
+                    if(activeDevs & devMask & (1 << j)) {
                         gmmk_setAnimationColor(s, j, argInt1, argInt2, argInt3);
                     }
                 }
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
                 c[j].b = readNumber();
             }
             for(j = 0; j < GMMK_MAX_DEVS; j++) {
-                if(devMask & (1 << j)) {
+                if(activeDevs & devMask & (1 << j)) {
                     gmmk_setKeys(s, j, argInt1, argInt2, c);
                 }
             }
