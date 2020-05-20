@@ -10,6 +10,7 @@ Run with no command will indicate the number of devices which it found which it
 can control.  Currently it will try to control the first 8 keyboards it finds.
 
 Commands:
+help - Shows this list of commands.
 devmask <mask> - Set the mask of detected devices which should be controlled by
     the following commands.  By default, all are selected.
 mode <num> - Set the mode.  20 is the mode for freely programming the keys, and

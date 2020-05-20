@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
                     fprintf(stderr, "WARNING: No devices selected!\n");
                 }
             }
+        } else if(strcmp(argv[i], "help") == 0) {
+            fprintf(stderr, "Commands:\nhelp - Shows this list of commands.\ndevmask <mask> - Set the mask of detected devices which should be controlled by the following commands.  By default, all are selected.\nmode <num> - Set the mode.  20 is the mode for freely programming the keys, and the highest meaningful value.\nbrightness <num> - Set the brightness.  0 - 4 are meaningful.\ndelay <num> - Set the delay between animation frames.  Very large values seem to be meaningful.  0 - 255\nleft - Set animation to proceed towards the left.\nright - Set animation to proceed towards the right.\ncolorful - Turn on 'colorful' mode.\nsingle - Turn on single color (not colorful) mode.\nrate - Adjust polling rate.  Not really tested. 0:125, 1:250, 2:500, 3:1000, 4+:???\ncolor <r> <g> <b> - Set color for single color mode. 0 - 255\nkeys - Read in human readable numbers from standard input and set key colors.\n    Values may be separated by any whitespace.  Seems to work by feeding in a\n    file from standard input or with a here word/document.\n    first value - Offset key to start programming colors.\n    second value - Number of values to follow.\n    N additional triplets - R, G and B values for each key color.  0 - 255\n");
         } else if(strcmp(argv[i], "mode") == 0) {
             if(i < argc - 1) {
                 i++;
