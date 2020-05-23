@@ -17,6 +17,31 @@ int main(int argc, char **argv) {
     unsigned int activeDevs;
     unsigned int devMask;
 
+    for (i = 1; i < argc; i++){
+                if(strcmp(argv[i], "help") == 0) {
+                    char *help = "Commands:\n"
+                            "   help - Shows this list of commands.\n"
+                            "   devmask <mask> - Set the mask of detected devices which should be controlled by the following commands. By default, all are selected.\n"
+                            "   mode <num> - Set the mode. 20 is the mode for freely programming the keys, and the highest meaningful value.\n"
+                            "   brightness <num> - Set the brightness.  0 - 4 are meaningful.\n"
+                            "   delay <num> - Set the delay between animation frames. Very large values seem to be meaningful. 0 - 255\n"
+                            "   left - Set animation to proceed towards the left.\n"
+                            "   right - Set animation to proceed towards the right.\n"
+                            "   colorful - Turn on 'colorful' mode.\n"
+                            "   single - Turn on single color (not colorful) mode.\n"
+                            "   rate - Adjust polling rate. Not really tested. 0:125, 1:250, 2:500, 3:1000, 4+:???\n"
+                            "   color <r> <g> <b> - Set color for single color mode. 0 - 255\n"
+                            "   keys - Read in human readable numbers from standard input and set key colors.\n"
+                            "       Values may be separated by any whitespace.  Seems to work by feeding in a\n"
+                            "       file from standard input or with a here word/document.\n"
+                            "       first value - Offset key to start programming colors.\n"
+                            "       second value - Number of values to follow.\n"
+                            "       N additional triplets - R, G and B values for each key color.  0 - 255\n";
+                    fprintf(stderr, help);
+                    exit (EXIT_SUCCESS);
+                }
+            }
+
     s = gmmk_open();
     if(s == NULL) {
         fprintf(stderr, "Failed to open any device.\n");
